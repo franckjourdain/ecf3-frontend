@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home';
+import Etudiants from './pages/Etudiants';
+import Login from './pages/Login';
+import { useState, useEffect } from 'react';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const handleLogin = () => setIsAuthenticated(true);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <nav>
+        <ul>
+          <li><Link to="/">Accueil</Link></li>
+          <li><Link to="/etudiants">Étudiants</Link></li>
+          <li><Link to="/login">Connexion</Link></li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/etudiants" element={<Etudiants />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      </Routes>
+    </Router>
   );
 }
 
