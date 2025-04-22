@@ -1,4 +1,3 @@
-// src/pages/Etudiants.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -6,7 +5,7 @@ function Etudiants() {
   const [etudiants, setEtudiants] = useState([]);
 
   useEffect(() => {
-    axios.get('/poudlard/etudiant/all') // ✅ Chemin corrigé ici
+    axios.get('/poudlard/etudiant/all')
       .then(response => {
         setEtudiants(response.data);
       })
@@ -16,15 +15,31 @@ function Etudiants() {
   }, []);
 
   return (
-    <div>
-      <h2>Liste des Étudiants</h2>
-      <ul>
-        {etudiants.map(etudiant => (
-          <li key={etudiant.idEtudiant}>
-            {etudiant.nom} {etudiant.prenom}
-          </li>
-        ))}
-      </ul>
+    <div className="container mt-5">
+      <h2 className="mb-4">👩‍🎓 Liste des Étudiants</h2>
+
+      {etudiants.length === 0 ? (
+        <div className="alert alert-info">Aucun étudiant à afficher.</div>
+      ) : (
+        <table className="table table-striped table-bordered">
+          <thead className="table-dark">
+            <tr>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {etudiants.map(etudiant => (
+              <tr key={etudiant.idEtudiant}>
+                <td>{etudiant.nom}</td>
+                <td>{etudiant.prenom}</td>
+                <td>{etudiant.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

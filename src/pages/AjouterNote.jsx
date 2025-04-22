@@ -1,4 +1,3 @@
-// src/pages/AjouterNote.jsx
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 
@@ -18,12 +17,10 @@ function AjouterNote() {
       },
     };
 
-    // Charger les étudiants
     api.get('/poudlard/etudiant', config)
       .then(res => setEtudiants(res.data))
       .catch(err => console.error("Erreur étudiants", err));
 
-    // Charger les cours
     api.get('/poudlard/cours', config)
       .then(res => setCours(res.data))
       .catch(err => console.error("Erreur cours", err));
@@ -39,7 +36,7 @@ function AjouterNote() {
     };
 
     try {
-      const response = await api.post(`/classes/notes/cours/${selectedCours}/etudiants/${selectedEtudiant}`, {
+      await api.post(`/classes/notes/cours/${selectedCours}/etudiants/${selectedEtudiant}`, {
         valeur: valeurNote,
       }, config);
 
@@ -51,39 +48,66 @@ function AjouterNote() {
   };
 
   return (
-    <div>
-      <h2>Ajouter une note</h2>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <select value={selectedEtudiant} onChange={(e) => setSelectedEtudiant(e.target.value)} required>
-          <option value="">Sélectionner un étudiant</option>
-          {etudiants.map(e => (
-            <option key={e.idEtudiant} value={e.idEtudiant}>
-              {e.nom} ({e.email})
-            </option>
-          ))}
-        </select>
+    <div className="container mt-5">
+      <h2 className="mb-4">Ajouter une note</h2>
 
-        <select value={selectedCours} onChange={(e) => setSelectedCours(e.target.value)} required>
-          <option value="">Sélectionner un cours</option>
-          {cours.map(c => (
-            <option key={c.idCours} value={c.idCours}>
-              {c.intitule}
-            </option>
-          ))}
-        </select>
+      {message && (
+        <div className={`alert ${message.includes("succès") ? "alert-success" : "alert-danger"}`}>
+          {message}
+        </div>
+      )}
 
-        <input
-          type="number"
-          min="0"
-          max="20"
-          step="0.5"
-          value={valeurNote}
-          onChange={(e) => setValeurNote(e.target.value)}
-          placeholder="Note"
-          required
-        />
-        <button type="submit">Ajouter</button>
+      <form onSubmit={handleSubmit} className="card p-4 shadow">
+        <div className="mb-3">
+          <label className="form-label">Étudiant</label>
+          <select
+            className="form-select"
+            value={selectedEtudiant}
+            onChange={(e) => setSelectedEtudiant(e.target.value)}
+            required
+          >
+            <option value="">Sélectionner un étudiant</option>
+            {etudiants.map(e => (
+              <option key={e.idEtudiant} value={e.idEtudiant}>
+                {e.nom} ({e.email})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Cours</label>
+          <select
+            className="form-select"
+            value={selectedCours}
+            onChange={(e) => setSelectedCours(e.target.value)}
+            required
+          >
+            <option value="">Sélectionner un cours</option>
+            {cours.map(c => (
+              <option key={c.idCours} value={c.idCours}>
+                {c.intitule}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Note (sur 20)</label>
+          <input
+            type="number"
+            min="0"
+            max="20"
+            step="0.5"
+            className="form-control"
+            value={valeurNote}
+            onChange={(e) => setValeurNote(e.target.value)}
+            placeholder="Note"
+            required
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary">Ajouter la note</button>
       </form>
     </div>
   );

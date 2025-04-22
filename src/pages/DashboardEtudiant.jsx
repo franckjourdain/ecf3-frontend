@@ -39,29 +39,33 @@ const DashboardEtudiant = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">
-        Dashboard Étudiant
-      </h1>
+    <div className="container mt-5">
+      <div className="mb-4">
+        <h1 className="mb-3">🎓 Dashboard Étudiant</h1>
+        {profil ? (
+          <div className="alert alert-primary">
+            Bienvenue : <strong>{profil.email}</strong>
+          </div>
+        ) : (
+          <div className="text-muted">Chargement du profil...</div>
+        )}
+      </div>
 
-      {profil ? (
-        <p className="mb-2">Bienvenue : {profil.email}</p>
-      ) : (
-        <p className="text-sm italic text-gray-500">Chargement du profil...</p>
-      )}
-
-      <h2 className="text-lg font-semibold mt-4 mb-2">Mes cours :</h2>
-      {cours.length === 0 ? (
-        <p className="italic text-gray-500">Aucun cours trouvé.</p>
-      ) : (
-        <ul className="list-disc ml-5">
-          {cours.map((c) => (
-            <li key={c.idCours}>
-              <strong>{c.intitule}</strong> ({c.ref})
-            </li>
-          ))}
-        </ul>
-      )}
+      <div>
+        <h2 className="mb-3">📚 Mes cours</h2>
+        {cours.length === 0 ? (
+          <div className="alert alert-warning">Aucun cours trouvé.</div>
+        ) : (
+          <ul className="list-group">
+            {cours.map((c) => (
+              <li key={c.idCours} className="list-group-item d-flex justify-content-between align-items-center">
+                <span><strong>{c.intitule}</strong></span>
+                <span className="badge bg-secondary">{c.ref}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

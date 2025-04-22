@@ -1,4 +1,3 @@
-// src/pages/MesNotes.jsx
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 
@@ -10,11 +9,11 @@ function MesNotes() {
     const fetchNotes = async () => {
       try {
         const token = localStorage.getItem('token');
-      const response = await api.get('/poudlard/etudiant/me/notes', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+        const response = await api.get('/poudlard/etudiant/me/notes', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setNotes(response.data);
       } catch (error) {
         console.error("Erreur lors du chargement des notes :", error);
@@ -27,16 +26,24 @@ function MesNotes() {
     fetchNotes();
   }, []);
 
-  if (loading) return <p>Chargement des notes...</p>;
+  if (loading) {
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary" role="status" />
+        <p className="mt-2">Chargement des notes...</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Mes Notes</h2>
+    <div className="container mt-5">
+      <h2 className="mb-4">📑 Mes Notes</h2>
+
       {notes.length === 0 ? (
-        <p>Aucune note trouvée.</p>
+        <div className="alert alert-info">Aucune note trouvée.</div>
       ) : (
-        <table border="1" cellPadding="10">
-          <thead>
+        <table className="table table-striped table-bordered">
+          <thead className="table-dark">
             <tr>
               <th>Cours</th>
               <th>Note</th>
@@ -45,7 +52,7 @@ function MesNotes() {
           <tbody>
             {notes.map((note) => (
               <tr key={note.idNote}>
-                <td>{note.cours?.intitule || 'Cours inconnu'}</td>
+                <td>{note.coursIntitule || 'Cours inconnu'}</td>
                 <td>{note.valeur}</td>
               </tr>
             ))}

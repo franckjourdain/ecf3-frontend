@@ -78,7 +78,7 @@ const AjoutEtudiantsCours = () => {
       );
       alert("Étudiants ajoutés avec succès !");
       setSelectedEtudiants([]);
-      fetchEtudiantsInscrits(selectedCoursId); // mettre à jour la liste
+      fetchEtudiantsInscrits(selectedCoursId);
     } catch (error) {
       console.error("Erreur lors de l'ajout des étudiants :", error);
       alert("Échec de l'ajout.");
@@ -90,15 +90,15 @@ const AjoutEtudiantsCours = () => {
   );
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">Ajouter des étudiants à un cours</h2>
+    <div className="container mt-5">
+      <h2 className="mb-4">Ajouter des étudiants à un cours</h2>
 
-      <div className="mb-4">
-        <label className="mr-2">Sélectionner un cours :</label>
+      <div className="mb-3">
+        <label className="form-label">Sélectionner un cours :</label>
         <select
           value={selectedCoursId}
           onChange={(e) => setSelectedCoursId(e.target.value)}
-          className="border p-1"
+          className="form-select"
         >
           <option value="">-- Choisir un cours --</option>
           {cours.map((cours) => (
@@ -111,30 +111,28 @@ const AjoutEtudiantsCours = () => {
 
       {selectedCoursId && (
         <>
-          <h3 className="text-md font-medium mb-2">Étudiants disponibles :</h3>
+          <h5 className="mt-4 mb-3">Étudiants disponibles :</h5>
           {etudiantsDisponibles.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">Aucun étudiant disponible pour ce cours.</p>
+            <div className="alert alert-info">Aucun étudiant disponible pour ce cours.</div>
           ) : (
-            <ul className="mb-4">
+            <ul className="list-group mb-4">
               {etudiantsDisponibles.map((etudiant) => (
-                <li key={etudiant.idEtudiant}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={selectedEtudiants.includes(etudiant.idEtudiant)}
-                      onChange={() => handleCheckboxChange(etudiant.idEtudiant)}
-                    />
-                    <span className="ml-2">
-                      {etudiant.nom} {etudiant.prenom}
-                    </span>
-                  </label>
+                <li key={etudiant.idEtudiant} className="list-group-item d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    className="form-check-input me-2"
+                    checked={selectedEtudiants.includes(etudiant.idEtudiant)}
+                    onChange={() => handleCheckboxChange(etudiant.idEtudiant)}
+                  />
+                  {etudiant.nom} {etudiant.prenom}
                 </li>
               ))}
             </ul>
           )}
+
           <button
             onClick={handleAjouter}
-            className="bg-green-500 text-white px-4 py-2 rounded"
+            className="btn btn-success"
           >
             Ajouter au cours
           </button>

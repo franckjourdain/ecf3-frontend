@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +9,6 @@ function Home() {
     const role = localStorage.getItem('role');
 
     if (!token) {
-      // Non connecté
       navigate('/login');
       return;
     }
@@ -26,11 +24,16 @@ function Home() {
         navigate('/dashboard-admin');
         break;
       default:
-        navigate('/login'); // rôle inconnu
+        navigate('/login');
     }
   }, [navigate]);
 
-  return <p>Redirection en cours...</p>;
+  return (
+    <div className="container mt-5 text-center">
+      <div className="spinner-border text-primary" role="status" />
+      <p className="mt-3">Redirection en cours...</p>
+    </div>
+  );
 }
 
 export default Home;

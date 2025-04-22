@@ -1,4 +1,3 @@
-// anciennement contenu de DashboardProfesseur.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -8,7 +7,6 @@ const NoteCours = () => {
   const [selectedCoursId, setSelectedCoursId] = useState(null);
   const [selectedEtudiantId, setSelectedEtudiantId] = useState('');
   const [note, setNote] = useState('');
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -20,7 +18,6 @@ const NoteCours = () => {
       const response = await axios.get('http://localhost:8082/poudlard/cours/professeur', {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
       });
       setCours(response.data);
@@ -34,7 +31,6 @@ const NoteCours = () => {
       const response = await axios.get(`http://localhost:8082/poudlard/cours/${coursId}/etudiants`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
       });
       setEtudiants(response.data);
@@ -51,8 +47,14 @@ const NoteCours = () => {
   };
 
   const handleSubmitNote = async () => {
-    if (!selectedEtudiantId || !note) {
-      alert('Sélectionne un étudiant et entre une note');
+    if (!selectedEtudiantId || note === '') {
+      alert('Sélectionnez un étudiant et entrez une note');
+      return;
+    }
+
+    const valeurNum = parseFloat(note);
+    if (valeurNum < 0 || valeurNum > 20) {
+      alert(' La note doit être comprise entre 0 et 20');
       return;
     }
 
@@ -60,85 +62,91 @@ const NoteCours = () => {
       await axios.post(
         `http://localhost:8082/classes/notes/cours/${selectedCoursId}/etudiants/${selectedEtudiantId}`,
         {
-          valeur: parseFloat(note), // ✅ correspond au modèle
+          valeur: valeurNum,
           intitule: "Note contrôlée",
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', // ✅ requis pour JSON
+            'Content-Type': 'application/json',
           },
         }
       );
-      alert('Note attribuée avec succès !');
+      alert('✅ Note attribuée avec succès !');
       setSelectedCoursId(null);
     } catch (error) {
       console.error('Erreur lors de l’envoi de la note', error);
-      alert("Erreur lors de l'envoi");
+      alert(" Erreur lors de l'envoi");
     }
   };
 
-
   return (
-    <div>
-      <table className="table-auto w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-4 py-2">Référence</th>
-            <th className="px-4 py-2">Intitulé</th>
-            <th className="px-4 py-2">Action</th>
+    <div className="container mt-4">
+      <h3 className="mb-4">📝 Attribution des notes</h3>
+
+      <table className="table table-bordered table-hover">
+        <thead className="table-dark">
+          <tr>
+            <th>Référence</th>
+            <th>Intitulé</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {cours.map((cours) => (
             <tr key={cours.idCours}>
-              <td className="border px-4 py-2">{cours.ref}</td>
-              <td className="border px-4 py-2">{cours.intitule}</td>
-              <td className="border px-4 py-2">
+              <td>{cours.ref}</td>
+              <td>{cours.intitule}</td>
+              <td>
                 {selectedCoursId === cours.idCours ? (
-                  <div className="flex flex-col space-y-2">
+                  <div className="p-3 border rounded bg-light">
                     {etudiants.length === 0 ? (
-                      <p className="text-sm text-gray-500 italic">
+                      <div className="text-muted fst-italic">
                         Aucun étudiant inscrit à ce cours.
-                      </p>
+                      </div>
                     ) : (
-                      <select
-                        value={selectedEtudiantId}
-                        onChange={(e) => setSelectedEtudiantId(e.target.value)}
-                        className="border p-1"
-                      >
-                        <option value="">-- Choisir un étudiant --</option>
-                        {etudiants.map((etudiant) => (
-                          <option key={etudiant.idEtudiant} value={etudiant.idEtudiant}>
-                            {etudiant.nom} {etudiant.prenom}
-                          </option>
-                        ))}
-                      </select>
+                      <>
+                        <div className="mb-2">
+                          <select
+                            className="form-select"
+                            value={selectedEtudiantId}
+                            onChange={(e) => setSelectedEtudiantId(e.target.value)}
+                          >
+                            <option value="">-- Choisir un étudiant --</option>
+                            {etudiants.map((etudiant) => (
+                              <option key={etudiant.idEtudiant} value={etudiant.idEtudiant}>
+                                {etudiant.nom} {etudiant.prenom}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="mb-2">
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Note sur 20"
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                            min="0"
+                            max="20"
+                            step="0.5"
+                          />
+                        </div>
+                        <div className="d-flex gap-2">
+                          <button onClick={handleSubmitNote} className="btn btn-success btn-sm">
+                            Valider
+                          </button>
+                          <button onClick={() => setSelectedCoursId(null)} className="btn btn-secondary btn-sm">
+                            Annuler
+                          </button>
+                        </div>
+                      </>
                     )}
-                    <input
-                      type="number"
-                      placeholder="Note"
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      className="border p-1"
-                    />
-                    <button
-                      onClick={handleSubmitNote}
-                      className="bg-green-500 text-white px-2 py-1 rounded"
-                    >
-                      Valider
-                    </button>
-                    <button
-                      onClick={() => setSelectedCoursId(null)}
-                      className="bg-gray-300 px-2 py-1 rounded"
-                    >
-                      Annuler
-                    </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => handleAttribuerNote(cours.idCours)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                    className="btn btn-primary btn-sm"
                   >
                     Attribuer une note
                   </button>
